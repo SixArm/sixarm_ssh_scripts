@@ -1,6 +1,6 @@
-# SixArm.com » Shell » SSH scripts
+# SixArm.com » SSH » Scripts for secure shell
 
-Secure shell scripts:
+SSH scripts for secure shell:
 
   * `ssh-copy-id-help`: SSH script to copy a pub id file to a remote server into your authorized_keys.
   * `ssh-fingerprint-of-known-host`: Print the SSH fingerprint of known host.
