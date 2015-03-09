@@ -1,4 +1,4 @@
-# SixArm.com » SSH » Scripts for secure shell
+# SSH » Scripts for secure shell
 
 SSH scripts for secure shell:
 
