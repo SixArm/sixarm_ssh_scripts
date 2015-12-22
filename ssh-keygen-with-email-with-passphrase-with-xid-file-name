@@ -2,27 +2,27 @@
 set -euf -o pipefail
 
 ##
-# SSH script to generate our typical key:
+# SSH script to generate our typical keys:
 #
 #   * Type: use the RSA algorithm because it's the widest used.
 #   * Bits: use 4096 because it's stronger than default 2048.
 #   * Comment: use the email address in case contact is needed.
-#   * Passphrase: none because we're using this for automation.
+#   * Passphrase: yes because the user must input a passphrase.
 #
 # File name convention:
 #
 #   * Start with the email address, so a user's keys will sort together.
 #   * Generate an XID (a.k.a. UUID with just letters and numbers).
-#   * Set the file name to "<email>=<xid>=id_rsa"
+#   * Set the file name to "<email>=automation=<xid>=id_rsa"
 #
 # Example:
 #
-#     ssh-keygen-with-email-fingerprint-file-name alice@example.com
+#     ssh-keygen-with-email-with-passphrase-with-xid-file-name alice@example.com
 #
 # Output files:
 #
-#     alice@example.com=34150d8e0d19ddbaec70d2e600166876=id_rsa
-#     alice@example.com=34150d8e0d19ddbaec70d2e600166876=id_rsa.pub
+#     alice@example.com=passphrase=34150d8e0d19ddbaec70d2e600166876=id_rsa
+#     alice@example.com=passphrase=34150d8e0d19ddbaec70d2e600166876=id_rsa.pub
 #
 # Author: Joel Parker Henderson (joel@joelparkerhenderson.com)
 # License: GPL
@@ -33,11 +33,13 @@ email="$1"
 shift
 
 ## Conf
+xid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/random`
+
+## SSH keygen conf
 type=rsa
 bits=4096
 comment="$email"
-passphrase=""
-xid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/random`
+passphrase_option=""
 
 ## Temporaries
 tmp_dir=$(mktemp -d -t `basename $0`)
@@ -45,12 +47,10 @@ tmp_basename="id_$type"
 tmp_file="$tmp_dir/$tmp_basename"
 
 ## Destinations
-out_dir=""
-out_basename="$email=$xid=id_$type"
-out_file="$out_basename"
+out_file="$email=passphrase=$xid=id_$type"
 
 ## Create key
-ssh-keygen -t "$type" -b "$bits" -C "$comment" -N "$passphrase" -f "$tmp_file" "$@"
+ssh-keygen -t "$type" -b "$bits" -C "$comment" -f "$tmp_file" "$@"
 mv "$tmp_file" "$out_file"
 mv "$tmp_file.pub" "$out_file.pub"
 
