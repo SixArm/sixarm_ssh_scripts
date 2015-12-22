@@ -1,0 +1,39 @@
+#!/bin/bash
+set -euf -o pipefail
+
+##
+# SSH script to generate our typical keys:
+#
+#   * Type: use the RSA algorithm because it's the widest used.
+#   * Bits: use 4096 because it's stronger than default 2048.
+#   * Comment: use the file name, which has the email, XID, etc.
+#   * Passphrase: yes
+#
+# File name convention:
+#
+#   * Use the email address, so a user's keys will sort together.
+#   * Generate an XID, a.k.a. UUID with only letters and numbers.
+#   * Use the word "automation" or "passphrase".
+#   * End with "id_rsa" which is SSH convention.
+#   * Separate items by using an equal sign, because it's not in email adddresses.
+#   * Thus the file name is "<email>=<xid>=passphrase=id_rsa".
+#
+# Example:
+#
+#     ssh-keygen-with-email-with-xid-with-passphrase alice@example.com
+#
+# Output files:
+#
+#     alice@example.com=34150d8e0d19ddbaec70d2e600166876=passphrase=id_rsa
+#     alice@example.com=34150d8e0d19ddbaec70d2e600166876=passphrase=id_rsa.pub
+#
+# Author: Joel Parker Henderson (joel@joelparkerhenderson.com)
+# License: GPL
+# Updated: 2015-12-20
+##
+
+email="$1"; shift
+xid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/random`
+file="$email=$xid=passphrase=id_rsa"
+ssh-keygen -t rsa -b 4096 -C "$file" -f "$file" "$@"
+echo $file
