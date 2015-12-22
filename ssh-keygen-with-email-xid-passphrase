@@ -20,7 +20,7 @@ set -euf -o pipefail
 #
 # Example:
 #
-#     ssh-keygen-with-email-with-xid-with-passphrase alice@example.com
+#     ssh-keygen-with-email-xid-passphrase alice@example.com
 #
 # Output files:
 #

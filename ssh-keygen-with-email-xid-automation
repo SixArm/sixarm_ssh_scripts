@@ -20,7 +20,7 @@ set -euf -o pipefail
 #
 # Example:
 #
-#     ssh-keygen-with-email-with-automation-with-xid-file-name alice@example.com
+#     ssh-keygen-with-email-xid--automation alice@example.com
 #
 # Output files:
 #
@@ -35,5 +35,5 @@ set -euf -o pipefail
 email="$1"; shift
 xid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/random`
 file="$email=$xid=automation=id_rsa"
-ssh-keygen -t rsa -b 4096 -C "$file" -f "$file" "$@"
+ssh-keygen -t rsa -b 4096 -C "$file" -f "$file" -N "" "$@"
 echo $file
