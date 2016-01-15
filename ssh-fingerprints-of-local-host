@@ -1,17 +1,20 @@
-#!/bin/bash
-set -euf -o pipefail
+#!/bin/sh
+set -euf
 
 ##
-# SSH script to print a server's ssh host public key fingerprints.
+# SSH script to print local host server public key fingerprints.
 #
 # Typical locations for fingerprints:
 #
 #   * Debian: /etc/ssh/ssh_host*.pub
 #   * OSX: /etc/ssh_host*.pub
 #
+# Compare `ssh-fingerprints-of-remote-host`.
+#
 # Author: Joel Parker Henderson (joel@joelparkerhenderson.com)
 # License: GPL
-# Updated: 2015-01-25
+# Created: 2015-01-25
+# Created: 2016-01-12
 ##
 
 find -L /etc -name 'ssh_host*.pub' | xargs -I{} ssh-keygen -l -f {}
