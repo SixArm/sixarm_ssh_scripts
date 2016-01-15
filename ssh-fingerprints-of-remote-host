@@ -31,5 +31,5 @@ set -euf
 host="$1"
 file=$(mktemp)
 trap 'rm -f $file' EXIT
-ssh-keyscan "$1" > "$file"
+ssh-keyscan "$1" 2>/dev/null > "$file"
 ssh-keygen -l -f "$file"
