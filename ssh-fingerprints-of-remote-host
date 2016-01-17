@@ -1,7 +1,5 @@
 #!/bin/sh
-set -euf
-
-##
+#
 # SSH script to print remote host server public key fingerprints.
 #
 # To get ssh key fingerprints from a server,
@@ -11,25 +9,67 @@ set -euf
 # Example:
 #
 #    ssh-keyscan-keygen 1.2.3.4
-#    2048 02:fc:a5:ff:97:dd:41:63:bb:88:8b:29:4e:75:23:ed 1.2.3.4 (RSA)
-#    256 ea:bc:4d:5f:ae:00:48:75:45:ba:97:43:fe:e1:a3:e9 1.2.3.4 (ECDSA)
+#    256 SHA256:FryalmLqGM7CD8nFVTXvW2CFhi+2MUuHeWv+aiQTIsE 211.210.196.157 (ECDSA)
+#    2048 SHA256:TIfaoFnQkKSNpe+cIMHuHCJEtsMhDjteUNQPMaomyKrt 211.210.196.157 (RSA)
+#    256 MD5:ea:bc:4d:5f:ae:00:48:75:45:ba:97:43:fe:e1:a3:e9 1.2.3.4 (ECDSA)
+#    2048 MD5:02:fc:a5:ff:97:dd:41:63:bb:88:8b:29:4e:75:23:ed 1.2.3.4 (RSA)
 #
 # Compare `ssh-fingerprints-of-local-host`.
+#
+# Credit: http://stackoverflow.com/questions/13791219/ssh-fingerprint-verification-for-amazon-aws-ec2-server-with-ecdsa
 #
 # Note: this implementation uses a temp file, instead of a pipe, because
 # we haven't found a way use a pipe for data between the two ssh commands.
 # In the future we hope to replace the temp file with a pipe.
 #
-# Credit: http://stackoverflow.com/questions/13791219/ssh-fingerprint-verification-for-amazon-aws-ec2-server-with-ecdsa
+# If you want to manually generate the fingerprint SHA256:
+#
+#     awk '{print $2}' "$file" |
+#     base64 -d |
+#     sha256sum -b |
+#     sed 's/ .*$//' |
+#     xxd -r -p |
+#     base64
+#
+# Credit: https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Authentication_Keys
 #
 # Author: Joel Parker Henderson (joel@joelparkerhenderson.com)
 # License: GPL
 # Created: 2015-01-25
 # Updated: 2016-01-13
 ##
+set -euf
+out () { printf %s\\n "$*" ; }
 
 host="$1"
 file=$(mktemp)
 trap 'rm -f $file' EXIT
 ssh-keyscan "$1" 2>/dev/null > "$file"
-ssh-keygen -l -f "$file"
+
+ssh_keygen_for_newer_versions(){
+    ssh-keygen -l -E sha256 -f "$file"
+    ssh-keygen -l -E md5 -f "$file"
+}
+
+ssh_keygen_for_older_versions(){
+    sha=$(sha_256_binary_cmd)
+    cat "$file" | 
+    while read ip kind code; do 
+	x=$( echo "$code" | base64 -d | $sha | sed 's/ .*$//' | xxd -r -p | base64 | sed 's/=\s*$//')
+	out "SHA256:$x $ip ($kind)"
+    done
+}
+
+sha_256_binary_cmd(){
+    cmd=$(which shasum sha256sum | grep -v "not found" | head -1)
+    case "$cmd" in
+        *shasum) cmd="$cmd -a 256 -b" ;;
+        *sha256sum) cmd="$cmd -b" ;;
+    esac
+    out "$cmd"
+}
+
+out "newer"
+ssh_keygen_for_newer_versions
+out "older"
+ssh_keygen_for_older_versions

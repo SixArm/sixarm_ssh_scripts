@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# SSH script to print key fingerprints using SHA-256.
+#
+# This script parses each line of a SSH keyscan file,
+# gets each key, and calculates its SSH-256 checksum.
+#
+# This script's primary purpose is to do a one-off checksum
+# on any system where thes `ssh-keygen` command is too old.
+#
+# Older `ssh-keygen` commands only provide MD5 checksums;
+# newer `ssh-keygen` commands provide MD5 and SHA-256.
+#
+# Syntax:
+#
+#     ssh-keygen-polyfill-l-f-sha <file>
+#
+# Example:
+#
+#     $ ssh-keygen-polyfill-l-f-sha keyscan.txt
+#     fXLOWDCZPxByLKUGiNAlDbIlLukovCWTkCuLjjdxMMuf
+#
+# Example with fake data and three keys:
+#
+#     $ ssh-keyscan 1.1.1.1 > tmp
+#     $ cat tmp
+#     1.1.1.1 ssh-rsa AAA...
+#     1.1.1.1 ssh-dsa AAA...
+#     1.1.1.1 ecdsa-sha2-nistp256 AAA...
+#     $ ssh-keygen-polyfill-l-f-sha tmp
+#     fXLOWDCZPxByLKUGiNAlDbIlLukovCWTkCuLjjdxMMuf
+#     YgrqgsOxwCMbAqTnCJNefOVoirUexmUEOZNqPemrntqB
+#     MkVqStKWjSiGSvaRScIKpWyeewYTBDJyZuenMdagpgXz
+#
+# The output is just the SHA 256 checksums, without labels.
+# Compare output from any current ssh-keygen, with labels.
+#
+# Version: 1.2.0
+# Created: 2016-01-13
+# Updated: 2015-01-17
+# License: GPL
+# Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
+##
+set -euf
+
+cat "$1" |
+sed 's/.* //' |
+while read line; do
+    echo $line |
+    base64 -d |
+    shasum -a 256 -b |
+    sed 's/ .*$//' |
+    xxd -r -p |
+    base64 |
+    sed 's/=\+$//'
+done
