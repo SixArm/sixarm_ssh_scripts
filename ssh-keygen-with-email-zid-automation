@@ -6,26 +6,26 @@ set -euf -o pipefail
 #
 #   * Type: use the RSA algorithm because it's the widest used.
 #   * Bits: use 4096 because it's stronger than default 2048.
-#   * Comment: use the file name, which has the email, XID, etc.
-#   * Passphrase: yes
+#   * Comment: use the file name, which has the email, ZID, etc.
+#   * Passphrase: no
 #
 # File name convention:
 #
 #   * Use the email address, so a user's keys will sort together.
-#   * Generate an XID, a.k.a. UUID with only letters and numbers.
+#   * Generate an ZID, akin to a UUID4 with only letters and numbers.
 #   * Use the word "automation" or "passphrase".
 #   * End with "id_rsa" which is SSH convention.
 #   * Separate items by using an equal sign, because it's not in email adddresses.
-#   * Thus the file name is "<email>=<xid>=passphrase=id_rsa".
+#   * Thus the file name is "<email>=<zid>=passphrase=id_rsa".
 #
 # Example:
 #
-#     ssh-keygen-with-email-xid-passphrase alice@example.com
+#     ssh-keygen-with-email-zid--automation alice@example.com
 #
 # Output files:
 #
-#     alice@example.com=34150d8e0d19ddbaec70d2e600166876=passphrase=id_rsa
-#     alice@example.com=34150d8e0d19ddbaec70d2e600166876=passphrase=id_rsa.pub
+#     alice@example.com=34150d8e0d19ddbaec70d2e600166876=automation=id_rsa
+#     alice@example.com=34150d8e0d19ddbaec70d2e600166876=automation=id_rsa.pub
 #
 # Author: Joel Parker Henderson (joel@joelparkerhenderson.com)
 # License: GPL
@@ -33,7 +33,7 @@ set -euf -o pipefail
 ##
 
 email="$1"; shift
-xid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/random`
-file="$email=$xid=passphrase=id_rsa"
-ssh-keygen -t rsa -b 4096 -C "$file" -f "$file" "$@"
+zid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/random`
+file="$email=$zid=automation=id_rsa"
+ssh-keygen -t rsa -b 4096 -C "$file" -f "$file" -N "" "$@"
 echo $file

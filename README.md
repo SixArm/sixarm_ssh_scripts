@@ -10,8 +10,8 @@ SSH scripts for secure shell:
 SSH key generation:
 
   * `ssh-keygen-with-email`: Generate our typical key with RSA 4096 and email address comment.
-  * `ssh-keygen-with-email-xid-automation`: Generate our typical keys, with automation, and save using our typical file names.
-  * `ssh-keygen-with-email-xid-passphrase`: Generate our typical keys, with passphrase, and save using our typical file names.
+  * `ssh-keygen-with-email-zid-automation`: Generate our typical keys, with automation, and save using our typical file names.
+  * `ssh-keygen-with-email-zid-passphrase`: Generate our typical keys, with passphrase, and save using our typical file names.
 
 SSH key fingerprints:
 
