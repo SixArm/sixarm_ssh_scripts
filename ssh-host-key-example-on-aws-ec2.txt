@@ -1,0 +1,17 @@
+ci-info: +++++++++++++++++Authorized keys from /home/ec2-user/.ssh/authorized_keys for user ec2-user+++++++++++++++++
+ci-info:  Keytype                 Fingerprint (md5)                 Options                  Comment
+ci-info:  ssh-rsa  7d:65:6b:b6:77:67:b3:40:9c:a5:9a:5f:04:50:55:9c     -     demo_aws_host_key_verification_key_pair
+ec2:
+ec2: #############################################################
+ec2: -----BEGIN SSH HOST KEY FINGERPRINTS-----
+ec2: 1024 fb:4a:ef:9f:7d:0f:f8:fb:89:ad:e4:7b:ea:9d:72:16  root@ip-172-30-3-133 (DSA)
+ec2: 256 e9:af:85:8c:76:c6:c9:c9:2f:9b:61:6b:96:10:4a:b4  root@ip-172-30-3-133 (ECDSA)
+ec2: 256 3e:74:9b:fc:4e:ea:cc:61:2a:73:b5:ed:18:b6:ba:8b   (ED25519)
+ec2: 2048 55:4f:ba:5a:48:e7:eb:d6:dd:d5:af:35:d6:fb:9e:ed  root@ip-172-30-3-133 (RSA)
+ec2: -----END SSH HOST KEY FINGERPRINTS-----
+ec2: #############################################################
+-----BEGIN SSH HOST KEY KEYS-----
+ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIKG/5mCgEtoq88WxNvkzDo0yBpk9gvkJtystDrWyotEgwGLx2aOS5SCARBxHP4ZI0ZMaodrT9/68ox7gO8LqBo= root@ip-172-30-3-133
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDaKICSITB1mWFPLR/RH1lBeDtvbiQf6UbVBHsdTh+sm
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDxFTkrepVGSkBxgE5ohioGr5VPedxCZQXjGHzo25M/Y+m8WewxzKwJOQS9mKvv8R2UD4AwO5zndgOl9oGfXsZytUvXgWCzjQu8ggwZHPxiaeAs9h0dSPxtIk4HpQiEzQzFyRA8/x8Ms/PP4uaG5YensYKCrJpH+C56wDMEtbvu7jDOA54I4OORsGmpLpnft5fjL9cUnE/HOeDLliOmTu74MzHSo9f5775LIGEnkt7VbENlbtSKkrXxLgZixMIqjC3dtb1JZlS8/ntHFIbmOPAfkA/NY5SQwG6wj01EKVNDvX8FdxIqiZnbbXpxiohEtUDXiFDbbTl5JyVVziwm98c/ root@ip-172-30-3-133
+-----END SSH HOST KEY KEYS-----
