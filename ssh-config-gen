@@ -10,4 +10,4 @@
 # Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
 ##
 set -euf
-find -L ~/.ssh/config.d -perm +222 -name '*.config' -exec cat {} \; > ~/.ssh/config
+find -L ~/.ssh/config.d ! -perm +222 -prune -o -name '*.config' -exec cat {} \; > ~/.ssh/config
