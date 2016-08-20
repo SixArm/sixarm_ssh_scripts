@@ -22,9 +22,15 @@
 # we haven't found a way use a pipe for data between the two ssh commands.
 # In the future we hope to replace the temp file with a pipe.
 #
-# If you want to manually generate the fingerprint SHA256:
+# ## Manual Example
 #
-#     awk '{print $2}' "$file" |
+# Suppose you want to download the key,
+# then extract just the ECDSA line,
+# then calculate the SHA256 fingerprint:
+#
+#     ssh-keyscan-keygen 1.2.3.4 > tmp
+#     grep ecdsa-sha2-nistp256 tmp |
+#     awk '{print $3}' |
 #     base64 -d |
 #     sha256sum -b |
 #     sed 's/ .*$//' |
@@ -53,8 +59,8 @@ ssh_keygen_for_newer_versions(){
 
 ssh_keygen_for_older_versions(){
     sha=$(sha_256_binary_cmd)
-    cat "$file" | 
-    while read ip kind code; do 
+    cat "$file" |
+    while read ip kind code; do
 	x=$( echo "$code" | base64 -d | $sha | sed 's/ .*$//' | xxd -r -p | base64 | sed 's/=\s*$//')
 	out "SHA256:$x $ip ($kind)"
     done
