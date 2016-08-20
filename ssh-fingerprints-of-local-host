@@ -11,10 +11,13 @@ set -euf
 #
 # Compare `ssh-fingerprints-of-remote-host`.
 #
-# Author: Joel Parker Henderson (joel@joelparkerhenderson.com)
+# Command: ssh-fingerprints-of-locale-host
+# Version: 1.2.0
 # License: GPL
 # Created: 2015-01-25
-# Created: 2016-01-12
+# Updated: 2016-08-19
+# Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
 ##
 
-find -L /etc -name 'ssh_host*.pub' | xargs -I{} ssh-keygen -l -f {}
+find -L /etc ! -readable -prune -o -name 'ssh_host*.pub' -print |
+xargs -I{} ssh-keygen -l -f {}
