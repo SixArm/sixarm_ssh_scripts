@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# SSH config file generator that concats sobdirectory files.
+#
+# Command: ssh-config-gen
+# Version: 1.1.0
+# License: GPL
+# Created: 2015-01-25
+# Updated: 2016-08-20
+# Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
+##
+set -euf
+find -L ~/.ssh/config.d -perm +222 -name '*.config' -exec cat {} \; > ~/.ssh/config
