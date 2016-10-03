@@ -27,13 +27,17 @@ set -euf -o pipefail
 #     alice@example.com=34150d8e0d19ddbaec70d2e600166876=passphrase=id_rsa
 #     alice@example.com=34150d8e0d19ddbaec70d2e600166876=passphrase=id_rsa.pub
 #
-# Author: Joel Parker Henderson (joel@joelparkerhenderson.com)
+# ## Tracking
+#
+# Command: ssh-keygen-with-email-zid-passphrase
+# Created: 2015-12-20 or earlier
+# Updated: 2016-10-02
 # License: GPL
-# Updated: 2015-12-20
+# Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
 ##
 
 email="$1"; shift
-zid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/random`
+zid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/urandom`
 file="$email=$zid=passphrase=id_rsa"
 ssh-keygen -t rsa -b 4096 -C "$file" -f "$file" "$@"
 echo $file
