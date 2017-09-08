@@ -2,15 +2,19 @@
 set -euf -o pipefail
 
 ##
-# SSH script to generate our typical SSH keys:
+# SSH script to generate our typical SSH keys.
 #
 # Syntax:
 #
-#     ssh-keygen-best <email> <host>
+#     ssh-keygen-pro [email] [host]
 #
 # Example:
 #
-#     ssh-keygen-best alice@example.com laptop.example.com
+#     ssh-keygen-pro
+#
+# Example with args:
+#
+#     ssh-keygen-pro alice@example.com laptop.example.com
 #
 #
 # ## Details
@@ -20,25 +24,24 @@ set -euf -o pipefail
 #   * Type: use the RSA algorithm because it's the widest used.
 #   * Bits: use 4096 because it's stronger than default 2048.
 #
-# File name convention:
+# Inputs:
 #
 #   * Use the email address, so a user's keys sort together.
 #   * Use the host identifier, so a user's machine keys sort together.
 #   * Generate an ZID, akin to a UUID4 with only letters and numbers.
-#   * Use the word "automation" or "passphrase".
-#   * End with "id_rsa" which is SSH convention.
+#   * Generate two keys, one for automation and one with a passphrase.
+#
+# Output fFile name convention:
+#
+#   * Syntax is <email>=<host>=<zid>=(automation|passphrase)=id_rsa
 #   * Separate items by using an equal sign, because it's not in email adddresses.
 #
-# File name syntax:
+# Output file examples:
 #
-#      <email>=<host>=<zid>=(automation|passphrase)=id_rsa
-#
-# File name output examples:
-#
-#     alice@example.com=laptop.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa
-#     alice@example.com=laptop.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa.pub
-#     alice@example.com=laptop.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa
-#     alice@example.com=laptop.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa.pub
+#     alice@example.com=demo.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa
+#     alice@example.com=demo.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa.pub
+#     alice@example.com=demo.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa
+#     alice@example.com=demo.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa.pub
 #
 #
 # ## Tracking
@@ -52,14 +55,24 @@ set -euf -o pipefail
 ##
 set -euf
 
-email="$1"; shift
-host="$1"; shift
-zid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/urandom`
+if [ "$#" -gt 0 ]; then
+    email="$1"; shift
+else
+    while [ -z ${email+x} ]; do echo -n 'Email addresss of the user? '; read email; done
+fi
+
+if [ "$#" -gt 0 ]; then
+    host="$1"; shift
+else
+    while [ -z ${host+x} ]; do echo -n 'Host name of the machine? '; read host; done
+fi
+
+zid=$(hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/urandom)
 
 x="$email=$host=$zid=automation=id_rsa"
 ssh-keygen -t rsa -b 4096 -C "$x" -f "$x" -N "" "$@"
-echo $f
+echo $x; echo $x.pub
 
-f="$email=$host=$zid=passphrase=id_rsa"
+x="$email=$host=$zid=passphrase=id_rsa"
 ssh-keygen -t rsa -b 4096 -C "$x" -f "$x" "$@"
-echo $f
+echo $x; echo $x.pub
