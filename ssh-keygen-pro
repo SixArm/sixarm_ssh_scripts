@@ -1,0 +1,65 @@
+#!/bin/bash
+set -euf -o pipefail
+
+##
+# SSH script to generate our typical SSH keys:
+#
+# Syntax:
+#
+#     ssh-keygen-best <email> <host>
+#
+# Example:
+#
+#     ssh-keygen-best alice@example.com laptop.example.com
+#
+#
+# ## Details
+#
+# SSH options:
+#
+#   * Type: use the RSA algorithm because it's the widest used.
+#   * Bits: use 4096 because it's stronger than default 2048.
+#
+# File name convention:
+#
+#   * Use the email address, so a user's keys sort together.
+#   * Use the host identifier, so a user's machine keys sort together.
+#   * Generate an ZID, akin to a UUID4 with only letters and numbers.
+#   * Use the word "automation" or "passphrase".
+#   * End with "id_rsa" which is SSH convention.
+#   * Separate items by using an equal sign, because it's not in email adddresses.
+#
+# File name syntax:
+#
+#      <email>=<host>=<zid>=(automation|passphrase)=id_rsa
+#
+# File name output examples:
+#
+#     alice@example.com=laptop.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa
+#     alice@example.com=laptop.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa.pub
+#     alice@example.com=laptop.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa
+#     alice@example.com=laptop.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa.pub
+#
+#
+# ## Tracking
+#
+#   * Command: ssh-keygen-best
+#   * Version: 3.0.0
+#   * Created: 2015-12-20 or earlier
+#   * Updated: 2017-09-08
+#   * License: GPL
+#   * Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
+##
+set -euf
+
+email="$1"; shift
+host="$1"; shift
+zid=`hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/urandom`
+
+x="$email=$host=$zid=automation=id_rsa"
+ssh-keygen -t rsa -b 4096 -C "$x" -f "$x" -N "" "$@"
+echo $f
+
+f="$email=$host=$zid=passphrase=id_rsa"
+ssh-keygen -t rsa -b 4096 -C "$x" -f "$x" "$@"
+echo $f
