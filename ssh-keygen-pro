@@ -2,11 +2,11 @@
 set -euf -o pipefail
 
 ##
-# SSH script to generate our typical SSH keys.
+# SSH keygen helper script to generate professional-quality keys.
 #
 # Syntax:
 #
-#     ssh-keygen-pro [email] [host]
+#     ssh-keygen-pro [email [host]]
 #
 # Example:
 #
@@ -14,8 +14,31 @@ set -euf -o pipefail
 #
 # Example with args:
 #
-#     ssh-keygen-pro alice@example.com laptop.example.com
+#     ssh-keygen-pro alice@example.com host.example.com
 #
+# Output is four files:
+#
+#   * A public file and private file for RSA 4096-bit with a passphrase
+#   * A public file and private file for RSA 4096-bit without a passphrase
+#
+# Output naming convention:
+#
+
+#   * navbar-tab-link
+navbar-tab-link
+#   * The files use our professional naming convention (see below).
+#
+# Output file examples:
+#
+#     alice@example.com=host.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa
+#     alice@example.com=host.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa.pub
+#     alice@example.com=host.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa
+#     alice@example.com=host.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa.pub
+#
+# Output file name convention:
+#
+#   * Syntax is <email>=<host>=<zid>=(automation|passphrase)=id_rsa[.pub]
+#   * Separate items by using an equal sign, because it's not in email adddresses.
 #
 # ## Details
 #
@@ -31,48 +54,46 @@ set -euf -o pipefail
 #   * Generate an ZID, akin to a UUID4 with only letters and numbers.
 #   * Generate two keys, one for automation and one with a passphrase.
 #
-# Output fFile name convention:
+# Output file name convention:
 #
-#   * Syntax is <email>=<host>=<zid>=(automation|passphrase)=id_rsa
+#   * Syntax is <email>=<host>=<zid>=(automation|passphrase)=id_rsa[.pub]
 #   * Separate items by using an equal sign, because it's not in email adddresses.
-#
-# Output file examples:
-#
-#     alice@example.com=demo.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa
-#     alice@example.com=demo.example.com=8af247255f409533f43c14cae2c07b97=automation=id_rsa.pub
-#     alice@example.com=demo.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa
-#     alice@example.com=demo.example.com=8af247255f409533f43c14cae2c07b97=passphrase=id_rsa.pub
 #
 #
 # ## Tracking
 #
 #   * Command: ssh-keygen-best
-#   * Version: 3.0.0
+#   * Version: 3.0.1
 #   * Created: 2015-12-20 or earlier
-#   * Updated: 2017-09-08
+#   * Updated: 2018-07-30
 #   * License: GPL
 #   * Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
 ##
 set -euf
 
+## Get the user's email address by using arg or a prompt
 if [ "$#" -gt 0 ]; then
     email="$1"; shift
 else
     while [ -z ${email+x} ]; do echo -n 'Email addresss of the user? '; read email; done
 fi
 
+## Get the user's host name by using arg or a prompt
 if [ "$#" -gt 0 ]; then
     host="$1"; shift
 else
     while [ -z ${host+x} ]; do echo -n 'Host name of the machine? '; read host; done
 fi
 
+## Generate a 32-character hexadecimal secure random unique identifier
 zid=$(hexdump -n 16 -v -e '16/1 "%02x" "\n"' /dev/urandom)
 
-x="$email=$host=$zid=automation=id_rsa"
-ssh-keygen -t rsa -b 4096 -C "$x" -f "$x" -N "" "$@"
+## Generate a key with a passphrase
+naming="$email=$host=$zid=passphrase=id_rsa"
+ssh-keygen -t rsa -b 4096 -C "$naming" -f "$naming" "$@"
 echo $x; echo $x.pub
 
-x="$email=$host=$zid=passphrase=id_rsa"
-ssh-keygen -t rsa -b 4096 -C "$x" -f "$x" "$@"
+## Generate a key without a passphrase suitable for automation
+naming="$email=$host=$zid=automation=id_rsa"
+ssh-keygen -t rsa -b 4096 -C "$naming" -f "$naming" -N "" "$@"
 echo $x; echo $x.pub
