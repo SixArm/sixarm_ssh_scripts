@@ -1,0 +1,1 @@
+ssh-keygen -lf <(ssh-keyscan "$1" 2>/dev/null)
